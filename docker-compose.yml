@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - MONGODB_URI=mongodb://mongo:27017/smartwork-hub
+      - JWT_ACCESS_SECRET=your_super_secret_access_key_change_in_production
+      - JWT_REFRESH_SECRET=your_super_secret_refresh_key_change_in_production
+    depends_on:
+      - mongo
+    networks:
+      - smartwork-network
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - smartwork-network
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - smartwork-network
+
+volumes:
+  mongo-data:
+
+networks:
+  smartwork-network:
+    driver: bridge
